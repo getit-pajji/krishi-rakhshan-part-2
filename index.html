@@ -150,6 +150,53 @@
                         <p class="text-gray-600 mb-4" data-lang-key="sustainability_desc">Learn why burning crop waste is harmful. Discover composting and mulching.</p>
                         <a href="#" class="font-bold text-green-600 hover:underline" data-lang-key="learn_more">Learn More &raquo;</a>
                     </div>
+
+                    <!-- Crop Health Analysis Card -->
+                    <div class="dashboard-card p-6 md:col-span-2 lg:col-span-3">
+                        <h2 class="text-xl font-semibold mb-3" data-lang-key="crop_health_analysis">Crop Health Analysis</h2>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Free Analysis Part -->
+                            <div class="lg:col-span-1 border-r-0 lg:border-r lg:pr-6 border-gray-200">
+                                <h3 class="font-semibold text-lg text-gray-800" data-lang-key="free_analysis">Free Photo Analysis</h3>
+                                <p class="text-gray-600 mb-4 text-sm" data-lang-key="free_analysis_desc">Get a basic health check by uploading a photo of your crop.</p>
+                                 <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                    <label for="farmer-file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none">
+                                        <span data-lang-key="upload_field_image">Upload field image</span>
+                                        <input id="farmer-file-upload" name="farmer-file-upload" type="file" class="sr-only">
+                                    </label>
+                                </div>
+                                <button class="mt-4 w-full bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700" data-lang-key="get_free_analysis">Get Free Analysis</button>
+                            </div>
+                            <!-- Premium Hyperspectral Scan Part -->
+                            <div class="lg:col-span-2">
+                                <h3 class="font-semibold text-lg text-green-700 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fill-rule="evenodd" d="M5 2a1 1 0 00-1 1v1.118a2 2 0 00-1.78 1.14l-1 2A1 1 0 002 9h16a1 1 0 00.78-1.742l-1-2A2 2 0 0016 4.118V3a1 1 0 00-1-1H5zm12 8H3a1 1 0 00-1 1v6a1 1 0 001 1h14a1 1 0 001-1v-6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span data-lang-key="upgrade_for_scan">Upgrade for Hyperspectral Scan</span>
+                                </h3>
+                                <p class="text-gray-600 mb-4 text-sm" data-lang-key="upgrade_desc">Get detailed insights on soil health, water stress, and disease prediction.</p>
+                                <div class="flex flex-col md:flex-row gap-4">
+                                    <!-- Single Scan Option -->
+                                    <div class="flex-1 p-4 border border-gray-300 rounded-lg bg-white text-center">
+                                        <h4 class="font-bold text-md" data-lang-key="single_scan">Single Field Scan</h4>
+                                        <p class="text-3xl font-bold my-2">₹93</p>
+                                        <p class="text-sm text-gray-500 mb-4" data-lang-key="single_scan_desc">One-time detailed analysis of your entire field.</p>
+                                        <button class="w-full btn-primary" data-lang-key="buy_now">Buy for ₹93</button>
+                                    </div>
+                                    <!-- Monthly Plan Option -->
+                                    <div class="flex-1 p-4 border-2 border-green-500 rounded-lg bg-green-50 text-center relative">
+                                        <span class="absolute top-0 right-0 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-bl-lg" data-lang-key="best_value">BEST VALUE</span>
+                                         <h4 class="font-bold text-md" data-lang-key="monthly_plan">Monthly Plan</h4>
+                                        <p class="text-3xl font-bold my-2">₹250<span class="text-lg font-normal text-gray-600">/mo</span></p>
+                                        <p class="text-sm text-gray-500 mb-4" data-lang-key="monthly_plan_desc">1 scan per week for 4 weeks. Continuous monitoring.</p>
+                                        <button class="w-full btn-primary" data-lang-key="subscribe_now">Subscribe for ₹250/mo</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </main>
              <!-- Chatbot -->
@@ -252,7 +299,21 @@
                 upload_file: "Upload a file",
                 analyze_image: "Analyze Image",
                 chatbot_title: "Krishi Sahayak",
-                chatbot_welcome: "Hello! How can I help you today? Ask me about crops, government schemes, or weather."
+                chatbot_welcome: "Hello! How can I help you today? Ask me about crops, government schemes, or weather.",
+                crop_health_analysis: "Crop Health Analysis",
+                free_analysis: "Free Photo Analysis",
+                free_analysis_desc: "Get a basic health check by uploading a photo of your crop.",
+                upload_field_image: "Upload field image",
+                get_free_analysis: "Get Free Analysis",
+                upgrade_for_scan: "Upgrade for Hyperspectral Scan",
+                upgrade_desc: "Get detailed insights on soil health, water stress, and disease prediction.",
+                single_scan: "Single Field Scan",
+                single_scan_desc: "One-time detailed analysis of your entire field.",
+                buy_now: "Buy for ₹93",
+                monthly_plan: "Monthly Plan",
+                monthly_plan_desc: "1 scan per week for 4 weeks. Continuous monitoring.",
+                subscribe_now: "Subscribe for ₹250/mo",
+                best_value: "BEST VALUE"
             },
             hi: {
                 welcome_title: "कृषि रक्षक में आपका स्वागत है",
@@ -282,7 +343,21 @@
                 upload_file: "एक फ़ाइल अपलोड करें",
                 analyze_image: "छवि का विश्लेषण करें",
                 chatbot_title: "कृषि सहायक",
-                chatbot_welcome: "नमस्ते! मैं आज आपकी कैसे मदद कर सकता हूँ? मुझसे फसलों, सरकारी योजनाओं या मौसम के बारे में पूछें।"
+                chatbot_welcome: "नमस्ते! मैं आज आपकी कैसे मदद कर सकता हूँ? मुझसे फसलों, सरकारी योजनाओं या मौसम के बारे में पूछें।",
+                crop_health_analysis: "फसल स्वास्थ्य विश्लेषण",
+                free_analysis: "मुफ़्त फोटो विश्लेषण",
+                free_analysis_desc: "अपनी फसल की एक तस्वीर अपलोड करके एक सामान्य स्वास्थ्य जांच प्राप्त करें।",
+                upload_field_image: "खेत की तस्वीर अपलोड करें",
+                get_free_analysis: "मुफ़्त विश्लेषण प्राप्त करें",
+                upgrade_for_scan: "हाइपरस्पेक्ट्रल स्कैन के लिए अपग्रेड करें",
+                upgrade_desc: "मिट्टी के स्वास्थ्य, पानी के तनाव और बीमारी की भविष्यवाणी पर विस्तृत जानकारी प्राप्त करें।",
+                single_scan: "एकल क्षेत्र स्कैन",
+                single_scan_desc: "आपके पूरे खेत का एकमुश्त विस्तृत विश्लेषण।",
+                buy_now: "₹93 में खरीदें",
+                monthly_plan: "मासिक योजना",
+                monthly_plan_desc: "4 सप्ताह के लिए प्रति सप्ताह 1 स्कैन। निरंतर निगरानी।",
+                subscribe_now: "₹250/माह के लिए सब्सक्राइब करें",
+                best_value: "सबसे अच्छा मूल्य"
             },
             pa: {
                 welcome_title: "ਕ੍ਰਿਸ਼ੀ ਰਕਸ਼ਕ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ",
@@ -312,7 +387,21 @@
                 upload_file: "ਇੱਕ ਫਾਈਲ ਅੱਪਲੋਡ ਕਰੋ",
                 analyze_image: "ਤਸਵੀਰ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰੋ",
                 chatbot_title: "ਕ੍ਰਿਸ਼ੀ ਸਹਾਇਕ",
-                chatbot_welcome: "ਸਤਿ ਸ਼੍ਰੀ ਅਕਾਲ! ਮੈਂ ਅੱਜ ਤੁਹਾਡੀ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ? ਮੈਨੂੰ ਫਸਲਾਂ, ਸਰਕਾਰੀ ਸਕੀਮਾਂ, ਜਾਂ ਮੌਸਮ ਬਾਰੇ ਪੁੱਛੋ।"
+                chatbot_welcome: "ਸਤਿ ਸ਼੍ਰੀ ਅਕਾਲ! ਮੈਂ ਅੱਜ ਤੁਹਾਡੀ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ? ਮੈਨੂੰ ਫਸਲਾਂ, ਸਰਕਾਰੀ ਸਕੀਮਾਂ, ਜਾਂ ਮੌਸਮ ਬਾਰੇ ਪੁੱਛੋ।",
+                crop_health_analysis: "ਫਸਲ ਸਿਹਤ ਵਿਸ਼ਲੇਸ਼ਣ",
+                free_analysis: "ਮੁਫਤ ਫੋਟੋ ਵਿਸ਼ਲੇਸ਼ਣ",
+                free_analysis_desc: "ਆਪਣੀ ਫਸਲ ਦੀ ਇੱਕ ਫੋਟੋ ਅਪਲੋਡ ਕਰਕੇ ਇੱਕ ਬੁਨਿਆਦੀ ਸਿਹਤ ਜਾਂਚ ਪ੍ਰਾਪਤ ਕਰੋ।",
+                upload_field_image: "ਖੇਤ ਦੀ ਤਸਵੀਰ ਅੱਪਲੋਡ ਕਰੋ",
+                get_free_analysis: "ਮੁਫਤ ਵਿਸ਼ਲੇਸ਼ਣ ਪ੍ਰਾਪਤ ਕਰੋ",
+                upgrade_for_scan: "ਹਾਈਪਰਸਪੈਕਟਰਲ ਸਕੈਨ ਲਈ ਅਪਗ੍ਰੇਡ ਕਰੋ",
+                upgrade_desc: "ਮਿੱਟੀ ਦੀ ਸਿਹਤ, ਪਾਣੀ ਦੇ ਤਣਾਅ, ਅਤੇ ਬਿਮਾਰੀ ਦੀ ਭਵਿੱਖਬਾਣੀ ਬਾਰੇ ਵਿਸਤ੍ਰਿਤ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ।",
+                single_scan: "ਸਿੰਗਲ ਫੀਲਡ ਸਕੈਨ",
+                single_scan_desc: "ਤੁਹਾਡੇ ਪੂਰੇ ਖੇਤ ਦਾ ਇੱਕ ਵਾਰ ਦਾ ਵਿਸਤ੍ਰਿਤ ਵਿਸ਼ਲੇਸ਼ਣ।",
+                buy_now: "₹93 ਵਿੱਚ ਖਰੀਦੋ",
+                monthly_plan: "ਮਹੀਨਾਵਾਰ ਯੋਜਨਾ",
+                monthly_plan_desc: "4 ਹਫ਼ਤਿਆਂ ਲਈ ਪ੍ਰਤੀ ਹਫ਼ਤਾ 1 ਸਕੈਨ। ਲਗਾਤਾਰ ਨਿਗਰਾਨੀ।",
+                subscribe_now: "₹250/ਮਹੀਨਾ ਲਈ ਸਬਸਕ੍ਰਾਈਬ ਕਰੋ",
+                best_value: "ਵਧੀਆ ਮੁੱਲ"
             }
             // Add other languages similarly...
         };
@@ -461,4 +550,5 @@
 
 </body>
 </html>
+
 
