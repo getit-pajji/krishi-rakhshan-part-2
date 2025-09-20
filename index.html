@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishi Rakshak - Farm Management App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=places&v=weekly" defer></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+        }
+        .dashboard-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .btn-primary {
+            background-color: #22c55e; /* Green 500 */
+            color: white;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #16a34a; /* Green 600 */
+        }
+        /* Simple modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 100; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 24px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Main Application Container -->
+    <div id="app-container">
+
+        <!-- Role & Language Selection Screen (Initial View) -->
+        <div id="selection-screen" class="min-h-screen flex items-center justify-center bg-green-50">
+            <div class="text-center p-8 bg-white rounded-2xl shadow-xl max-w-md w-full">
+                
+                <h1 class="text-3xl font-bold text-green-700 mb-2" data-lang-key="welcome_title">Welcome to Krishi Rakshak</h1>
+                <p class="text-gray-600 mb-6" data-lang-key="welcome_subtitle">Your trusted partner in farming.</p>
+
+                <div class="mb-6">
+                    <label for="language-select" class="block text-left font-medium text-gray-700 mb-2" data-lang-key="select_language">Select Language</label>
+                    <select id="language-select" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी (Hindi)</option>
+                        <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                        <option value="bn">বাংলা (Bengali)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                    </select>
+                </div>
+
+                <div class="mb-6">
+                     <p class="block text-left font-medium text-gray-700 mb-2" data-lang-key="select_role">I am a...</p>
+                    <div class="flex space-x-4">
+                        <button onclick="selectRole('farmer')" class="flex-1 btn-primary" data-lang-key="role_farmer">Farmer</button>
+                        <button onclick="selectRole('controller')" class="flex-1 btn-primary" data-lang-key="role_controller">Controller</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Farmer Dashboard (Hidden by default) -->
+        <div id="farmer-dashboard" class="hidden">
+             <nav class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50">
+                <h1 class="text-2xl font-bold text-green-700">Krishi Rakshak</h1>
+                <div class="flex items-center space-x-4">
+                    <p><span class="font-medium" data-lang-key="helpline">Govt. Helpline:</span> <a href="tel:1800-180-1551" class="text-green-600 font-bold hover:underline">1800-180-1551</a></p>
+                    <button onclick="logout()" class="text-sm font-medium text-gray-600 hover:text-green-700" data-lang-key="logout">Logout</button>
+                </div>
+            </nav>
+
+            <main class="p-4 md:p-8">
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Location & Weather Card -->
+                    <div class="dashboard-card p-6 md:col-span-2 lg:col-span-1">
+                        <h2 class="text-xl font-semibold mb-3" data-lang-key="farm_location_weather">Farm Location & Weather</h2>
+                        <div id="map" class="h-48 rounded-lg bg-gray-200 mb-4"></div>
+                        <p class="font-medium">Nagpur, Maharashtra</p>
+                        <div class="mt-4">
+                            <p class="text-3xl font-bold">28°C <span class="text-lg font-medium text-gray-500">Clear Sky</span></p>
+                            <p class="text-gray-600" data-lang-key="wind">Wind: 12 km/h</p>
+                            <p class="text-gray-600" data-lang-key="soil_type">Soil Type: Black Cotton Soil</p>
+                            <p class="mt-2 text-green-700 font-medium" data-lang-key="best_crops">Best Crops: Cotton, Oranges, Soybean</p>
+                        </div>
+                    </div>
+                     <!-- Market Prices Card -->
+                    <div class="dashboard-card p-6 md:col-span-2">
+                        <h2 class="text-xl font-semibold mb-3" data-lang-key="market_prices">Market Price Analyzer</h2>
+                        <canvas id="marketChart"></canvas>
+                    </div>
+                     <!-- Order Supplies Card -->
+                    <div class="dashboard-card p-6">
+                        <h2 class="text-xl font-semibold mb-3" data-lang-key="order_supplies">Order Supplies</h2>
+                        <p class="text-gray-600 mb-4" data-lang-key="order_supplies_desc">Get government-rate fertilizers & pesticides.</p>
+                        <button class="w-full btn-primary" data-lang-key="place_order">Place an Order</button>
+                    </div>
+
+                    <!-- Nearby Krishi Kendras -->
+                    <div class="dashboard-card p-6">
+                        <h2 class="text-xl font-semibold mb-3" data-lang-key="nearby_kendras">Nearby Krishi Kendras</h2>
+                         <ul class="space-y-3">
+                            <li class="p-3 bg-gray-50 rounded-lg">
+                                <p class="font-semibold">Central Institute for Cotton Research</p>
+                                <p class="text-sm text-gray-600">5 km away - Nagpur</p>
+                            </li>
+                            <li class="p-3 bg-gray-50 rounded-lg">
+                                <p class="font-semibold">Panjabrao Deshmukh Krishi Vidyapeeth</p>
+                                <p class="text-sm text-gray-600">12 km away - Akola</p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Sustainability Corner -->
+                    <div class="dashboard-card p-6">
+                        <h2 class="text-xl font-semibold mb-3" data-lang-key="sustainability_corner">Sustainability Corner</h2>
+                        <p class="text-gray-600 mb-4" data-lang-key="sustainability_desc">Learn why burning crop waste is harmful. Discover composting and mulching.</p>
+                        <a href="#" class="font-bold text-green-600 hover:underline" data-lang-key="learn_more">Learn More &raquo;</a>
+                    </div>
+                </div>
+            </main>
+             <!-- Chatbot -->
+            <div id="chatbot-farmer" class="fixed bottom-6 right-6">
+                <button onclick="openChatbot()" class="bg-green-600 text-white rounded-full p-4 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.839 8.839 0 01-4.444-1.232l-2.148.859a1 1 0 01-1.241-1.241l.859-2.148A8.839 8.839 0 012 10c0-4.418 4.477-8 10-8s8 3.582 8 8zm-4.146-2.146a.5.5 0 00-.708-.708L10 10.293 7.854 8.146a.5.5 0 10-.708.708L9.293 11l-2.147 2.146a.5.5 0 00.708.708L10 11.707l2.146 2.147a.5.5 0 00.708-.708L10.707 11l2.147-2.146z" clip-rule="evenodd" /></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Controller Dashboard (Hidden by default) -->
+        <div id="controller-dashboard" class="hidden">
+             <nav class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50">
+                <h1 class="text-2xl font-bold text-green-700" data-lang-key="controller_dashboard">Controller Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                     <p><span class="font-medium" data-lang-key="helpline">Govt. Helpline:</span> <a href="tel:1800-180-1551" class="text-green-600 font-bold hover:underline">1800-180-1551</a></p>
+                    <button onclick="logout()" class="text-sm font-medium text-gray-600 hover:text-green-700" data-lang-key="logout">Logout</button>
+                </div>
+            </nav>
+            <main class="p-4 md:p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                     <!-- Regional Farm Map -->
+                    <div class="dashboard-card p-6">
+                         <h2 class="text-xl font-semibold mb-3" data-lang-key="regional_farms">Farms in 50km Radius</h2>
+                         <div id="controller-map" class="h-96 rounded-lg bg-gray-200"></div>
+                    </div>
+                     <!-- AI Diagnosis Panel -->
+                    <div class="dashboard-card p-6">
+                        <h2 class="text-xl font-semibold mb-3" data-lang-key="ai_diagnosis">AI-Powered Diagnosis</h2>
+                        <p class="text-gray-600 mb-4" data-lang-key="ai_diagnosis_desc">Upload a crop image for instant analysis and advice.</p>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                            <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
+                                <span data-lang-key="upload_file">Upload a file</span>
+                                <input id="file-upload" name="file-upload" type="file" class="sr-only">
+                            </label>
+                            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                        </div>
+                        <button class="mt-4 w-full btn-primary" data-lang-key="analyze_image">Analyze Image</button>
+                    </div>
+                </div>
+            </main>
+             <!-- Chatbot -->
+            <div id="chatbot-controller" class="fixed bottom-6 right-6">
+                 <button onclick="openChatbot()" class="bg-green-600 text-white rounded-full p-4 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.839 8.839 0 01-4.444-1.232l-2.148.859a1 1 0 01-1.241-1.241l.859-2.148A8.839 8.839 0 012 10c0-4.418 4.477-8 10-8s8 3.582 8 8zm-4.146-2.146a.5.5 0 00-.708-.708L10 10.293 7.854 8.146a.5.5 0 10-.708.708L9.293 11l-2.147 2.146a.5.5 0 00.708.708L10 11.707l2.146 2.147a.5.5 0 00.708-.708L10.707 11l2.147-2.146z" clip-rule="evenodd" /></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Modal -->
+    <div id="chatbot-modal" class="modal">
+        <div class="modal-content relative">
+             <button onclick="closeChatbot()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">&times;</button>
+            <h2 class="text-xl font-bold mb-4" data-lang-key="chatbot_title">Krishi Sahayak</h2>
+            <div class="h-64 bg-gray-100 p-3 rounded-lg overflow-y-auto mb-4">
+                <!-- Chat messages will appear here -->
+                <div class="text-sm text-gray-700"><b class="text-green-700">Krishi Sahayak:</b> <span data-lang-key="chatbot_welcome">Hello! How can I help you today? Ask me about crops, government schemes, or weather.</span></div>
+            </div>
+            <input type="text" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Type your question here...">
+        </div>
+    </div>
+    
+    <script type="module">
+        // This is a placeholder for Firebase integration.
+        // In a real app, you would initialize Firebase here.
+        // import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // const firebaseConfig = JSON.parse(__firebase_config || '{}');
+        // const app = initializeApp(firebaseConfig);
+    </script>
+
+    <script>
+        const translations = {
+            en: {
+                welcome_title: "Welcome to Krishi Rakshak",
+                welcome_subtitle: "Your trusted partner in farming.",
+                select_language: "Select Language",
+                select_role: "I am a...",
+                role_farmer: "Farmer",
+                role_controller: "Controller",
+                logout: "Logout",
+                helpline: "Govt. Helpline:",
+                farm_location_weather: "Farm Location & Weather",
+                wind: "Wind:",
+                soil_type: "Soil Type:",
+                best_crops: "Best Crops:",
+                market_prices: "Market Price Analyzer",
+                order_supplies: "Order Supplies",
+                order_supplies_desc: "Get government-rate fertilizers & pesticides.",
+                place_order: "Place an Order",
+                nearby_kendras: "Nearby Krishi Kendras",
+                sustainability_corner: "Sustainability Corner",
+                sustainability_desc: "Learn why burning crop waste is harmful. Discover composting and mulching.",
+                learn_more: "Learn More »",
+                controller_dashboard: "Controller Dashboard",
+                regional_farms: "Farms in 50km Radius",
+                ai_diagnosis: "AI-Powered Diagnosis",
+                ai_diagnosis_desc: "Upload a crop image for instant analysis and advice.",
+                upload_file: "Upload a file",
+                analyze_image: "Analyze Image",
+                chatbot_title: "Krishi Sahayak",
+                chatbot_welcome: "Hello! How can I help you today? Ask me about crops, government schemes, or weather."
+            },
+            hi: {
+                welcome_title: "कृषि रक्षक में आपका स्वागत है",
+                welcome_subtitle: "खेती में आपका विश्वसनीय साथी।",
+                select_language: "भाषा चुनें",
+                select_role: "मैं एक...",
+                role_farmer: "किसान",
+                role_controller: "नियंत्रक",
+                logout: "लॉग आउट",
+                helpline: "सरकारी हेल्पलाइन:",
+                farm_location_weather: "खेत का स्थान और मौसम",
+                wind: "हवा:",
+                soil_type: "मिट्टी का प्रकार:",
+                best_crops: "सर्वश्रेष्ठ फसलें:",
+                market_prices: "बाजार मूल्य विश्लेषक",
+                order_supplies: "आपूर्ति का आदेश दें",
+                order_supplies_desc: "सरकारी दर पर उर्वरक और कीटनाशक प्राप्त करें।",
+                place_order: "आदेश दें",
+                nearby_kendras: "आस-पास के कृषि केंद्र",
+                sustainability_corner: "सस्टेनेबिलिटी कॉर्नर",
+                sustainability_desc: "जानें कि फसल अवशेष जलाना क्यों हानिकारक है। खाद और मल्चिंग के बारे में जानें।",
+                learn_more: "और जानें »",
+                controller_dashboard: "नियंत्रक डैशबोर्ड",
+                regional_farms: "50 किमी के दायरे में खेत",
+                ai_diagnosis: "एआई-संचालित निदान",
+                ai_diagnosis_desc: "तत्काल विश्लेषण और सलाह के लिए फसल की एक छवि अपलोड करें।",
+                upload_file: "एक फ़ाइल अपलोड करें",
+                analyze_image: "छवि का विश्लेषण करें",
+                chatbot_title: "कृषि सहायक",
+                chatbot_welcome: "नमस्ते! मैं आज आपकी कैसे मदद कर सकता हूँ? मुझसे फसलों, सरकारी योजनाओं या मौसम के बारे में पूछें।"
+            },
+            pa: {
+                welcome_title: "ਕ੍ਰਿਸ਼ੀ ਰਕਸ਼ਕ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ",
+                welcome_subtitle: "ਖੇਤੀ ਵਿੱਚ ਤੁਹਾਡਾ ਭਰੋਸੇਮੰਦ ਸਾਥੀ।",
+                select_language: "ਭਾਸ਼ਾ ਚੁਣੋ",
+                select_role: "ਮੈਂ ਇੱਕ...",
+                role_farmer: "ਕਿਸਾਨ",
+                role_controller: "ਕੰਟਰੋਲਰ",
+                logout: "ਲੌਗ ਆਊਟ",
+                helpline: "ਸਰਕਾਰੀ ਹੈਲਪਲਾਈਨ:",
+                farm_location_weather: "ਖੇਤ ਦਾ ਸਥਾਨ ਅਤੇ ਮੌਸਮ",
+                wind: "ਹਵਾ:",
+                soil_type: "ਮਿੱਟੀ ਦੀ ਕਿਸਮ:",
+                best_crops: "ਵਧੀਆ ਫਸਲਾਂ:",
+                market_prices: "ਬਾਜ਼ਾਰ ਕੀਮਤ ਵਿਸ਼ਲੇਸ਼ਕ",
+                order_supplies: "ਸਪਲਾਈ ਆਰਡਰ ਕਰੋ",
+                order_supplies_desc: "ਸਰਕਾਰੀ ਦਰ 'ਤੇ ਖਾਦ ਅਤੇ ਕੀਟਨਾਸ਼ਕ ਪ੍ਰਾਪਤ ਕਰੋ।",
+                place_order: "ਆਰਡਰ ਦਿਓ",
+                nearby_kendras: "ਨੇੜਲੇ ਕ੍ਰਿਸ਼ੀ ਕੇਂਦਰ",
+                sustainability_corner: "ਸਸਟੇਨੇਬਿਲਟੀ ਕਾਰਨਰ",
+                sustainability_desc: "ਜਾਣੋ ਕਿ ਫਸਲਾਂ ਦੀ ਰਹਿੰਦ-ਖੂੰਹਦ ਨੂੰ ਸਾੜਨਾ ਕਿਉਂ ਨੁਕਸਾਨਦੇਹ ਹੈ। ਕੰਪੋਸਟਿੰਗ ਅਤੇ ਮਲਚਿੰਗ ਬਾਰੇ ਜਾਣੋ।",
+                learn_more: "ਹੋਰ ਜਾਣੋ »",
+                controller_dashboard: "ਕੰਟਰੋਲਰ ਡੈਸ਼ਬੋਰਡ",
+                regional_farms: "50 ਕਿਲੋਮੀਟਰ ਦੇ ਦਾਇਰੇ ਵਿੱਚ ਖੇਤ",
+                ai_diagnosis: "ਏਆਈ-ਸੰਚਾਲਿਤ ਨਿਦਾਨ",
+                ai_diagnosis_desc: "ਤੁਰੰਤ ਵਿਸ਼ਲੇਸ਼ਣ ਅਤੇ ਸਲਾਹ ਲਈ ਫਸਲ ਦੀ ਤਸਵੀਰ ਅੱਪਲੋਡ ਕਰੋ।",
+                upload_file: "ਇੱਕ ਫਾਈਲ ਅੱਪਲੋਡ ਕਰੋ",
+                analyze_image: "ਤਸਵੀਰ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰੋ",
+                chatbot_title: "ਕ੍ਰਿਸ਼ੀ ਸਹਾਇਕ",
+                chatbot_welcome: "ਸਤਿ ਸ਼੍ਰੀ ਅਕਾਲ! ਮੈਂ ਅੱਜ ਤੁਹਾਡੀ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ? ਮੈਨੂੰ ਫਸਲਾਂ, ਸਰਕਾਰੀ ਸਕੀਮਾਂ, ਜਾਂ ਮੌਸਮ ਬਾਰੇ ਪੁੱਛੋ।"
+            }
+            // Add other languages similarly...
+        };
+
+        const languageSelect = document.getElementById('language-select');
+        let currentLanguage = 'en';
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('[data-lang-key]').forEach(element => {
+                const key = element.getAttribute('data-lang-key');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        languageSelect.addEventListener('change', (event) => {
+            setLanguage(event.target.value);
+        });
+
+        // Initialize with default language
+        setLanguage('en');
+
+        function selectRole(role) {
+            localStorage.setItem('userRole', role);
+            localStorage.setItem('userLang', currentLanguage);
+            document.getElementById('selection-screen').classList.add('hidden');
+            if (role === 'farmer') {
+                document.getElementById('farmer-dashboard').classList.remove('hidden');
+                renderMarketChart();
+            } else {
+                document.getElementById('controller-dashboard').classList.remove('hidden');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userLang');
+            document.getElementById('selection-screen').classList.remove('hidden');
+            document.getElementById('farmer-dashboard').classList.add('hidden');
+            document.getElementById('controller-dashboard').classList.add('hidden');
+        }
+
+        // Check for saved role on page load
+        window.onload = function() {
+            const savedRole = localStorage.getItem('userRole');
+            const savedLang = localStorage.getItem('userLang');
+            if (savedRole && savedLang) {
+                languageSelect.value = savedLang;
+                setLanguage(savedLang);
+                selectRole(savedRole);
+            }
+        };
+
+        // --- Chart.js for Market Prices ---
+        function renderMarketChart() {
+             const ctx = document.getElementById('marketChart').getContext('2d');
+             if(window.marketChartInstance) {
+                window.marketChartInstance.destroy();
+             }
+             window.marketChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Cotton Price (₹/quintal)',
+                        data: [6800, 6950, 7100, 7050, 7200, 7300],
+                        borderColor: '#16a34a',
+                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Soybean Price (₹/quintal)',
+                        data: [4500, 4600, 4550, 4700, 4850, 4800],
+                        borderColor: '#F59E0B',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // --- Google Maps ---
+        function initMap() {
+            const nagpur = { lat: 21.1458, lng: 79.0882 };
+            // Farmer map
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: nagpur,
+                disableDefaultUI: true,
+            });
+            new google.maps.Marker({
+                position: nagpur,
+                map: map,
+                title: "Your Farm Location",
+            });
+            
+            // Controller map
+            const controllerMap = new google.maps.Map(document.getElementById("controller-map"), {
+                zoom: 9,
+                center: nagpur,
+            });
+            // Example farm markers
+            const farms = [
+                { lat: 21.1458, lng: 79.0882, name: 'Farm A' },
+                { lat: 21.2000, lng: 79.1500, name: 'Farm B' },
+                { lat: 21.1000, lng: 79.0000, name: 'Farm C' }
+            ];
+            farms.forEach(farm => {
+                 new google.maps.Marker({
+                    position: farm,
+                    map: controllerMap,
+                    title: farm.name
+                });
+            });
+        }
+        
+        // --- Chatbot Modal ---
+        const chatbotModal = document.getElementById('chatbot-modal');
+
+        function openChatbot() {
+            chatbotModal.style.display = 'block';
+        }
+
+        function closeChatbot() {
+            chatbotModal.style.display = 'none';
+        }
+
+        // Close modal if user clicks outside of it
+        window.onclick = function(event) {
+            if (event.target == chatbotModal) {
+                chatbotModal.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>
+
